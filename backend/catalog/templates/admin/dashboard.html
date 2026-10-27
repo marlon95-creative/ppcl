@@ -1,0 +1,24 @@
+{% extends "admin/index.html" %}
+{% block content %}
+<style>
+  .dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+  .dash a{display:block;padding:14px 16px;border:1px solid var(--hairline-color,#ccc);border-radius:10px;text-decoration:none;background:var(--darkened-bg,#f6f6f6);color:inherit}
+  .dash strong{display:block;font-size:1.8rem;line-height:1.1}
+  .dash a:hover{border-color:var(--link-fg,#417690)}
+</style>
+<div class="dash">
+  <a href="{% url 'admin:quotes_quoterequest_changelist' %}?status__exact=new"><strong>{{ dash.new }}</strong>New quote requests</a>
+  <a href="{% url 'admin:quotes_quoterequest_changelist' %}?status__exact=in_review"><strong>{{ dash.in_review }}</strong>In review</a>
+  <a href="{% url 'admin:quotes_quoterequest_changelist' %}?status__exact=responded"><strong>{{ dash.responded }}</strong>Responded</a>
+  <a href="{% url 'admin:quotes_contactmessage_changelist' %}?is_handled__exact=0"><strong>{{ dash.messages }}</strong>Unread messages</a>
+  <a href="{% url 'admin:catalog_product_changelist' %}?is_published__exact=1"><strong>{{ dash.products_live }}</strong>Published products</a>
+  <a href="{% url 'admin:catalog_product_changelist' %}?is_published__exact=0"><strong>{{ dash.products_hidden }}</strong>Unpublished products</a>
+</div>
+{% if dash.recent %}
+<h2>Latest quote requests</h2>
+<table style="width:100%;margin-bottom:24px"><thead><tr><th>Reference</th><th>Client</th><th>Category</th><th>Status</th><th>Received</th></tr></thead><tbody>
+{% for r in dash.recent %}<tr><td><a href="{% url 'admin:quotes_quoterequest_change' r.pk %}">{{ r.reference }}</a></td><td>{{ r.full_name }}</td><td>{{ r.category|default:"Other" }}</td><td>{{ r.get_status_display }}</td><td>{{ r.created_at|date:"d M Y H:i" }}</td></tr>{% endfor %}
+</tbody></table>
+{% endif %}
+{{ block.super }}
+{% endblock %}
